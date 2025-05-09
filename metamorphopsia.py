@@ -14,14 +14,16 @@ bump_r = 2 * dx
 date = datetime.now().strftime("%Y-%m-%d")
 title_base = "Metamorphopsia Measurement Tool"
 
-selected_line_num = None
+selected_x_line_num = None
+selected_y_line_num = None
 
 window = Tk() 
 window.title('Metamorphopsia Measurement Tool') 
-window.geometry(str(width) + "x" + str(width + 200)) 
+window.geometry(str(width) + "x" + str(width + 100)) 
 
-# offset and value units of 1/10 of dx
+# offset and value
 h_lines = [ {'offset': 0, 'value': 0} for x in range(num_lines)]
+v_lines = [ {'offset': 0, 'value': 0} for x in range(num_lines)]
 
 canvas = Canvas(window, bg="white", height=width, width=width) 
 button_frame = Frame(window)
@@ -32,7 +34,8 @@ def set_window_title():
 
 def reset():
     global h_lines, v_lines
-    h_lines = [ {'offset': 0, 'value': 0} for x in range(num_lines)]     
+    h_lines = [ {'offset': 0, 'value': 0} for x in range(num_lines)]   
+    v_lines = [ {'offset': 0, 'value': 0} for x in range(num_lines)]    
     draw_lines()    
 
 def save_as():
@@ -42,7 +45,7 @@ def save_as():
         initialdir='.',
         defaultextension=".met",
         filetypes=[("Metamorphopsia JSON","*.met")])
-    data = {'bump_r': bump_r, 'h_lines': h_lines, 'date': date}
+    data = {'bump_r': bump_r, 'h_lines': h_lines, 'v_lines': v_lines, 'date': date}
     if file is None: # asksaveasfile return `None` if dialog closed with "cancel".
         return
     json.dump(data, file)
@@ -50,7 +53,7 @@ def save_as():
     
 
 def open_file():
-    global h_lines, bump_r, date
+    global h_lines, v_lines, bump_r, date
     file = askopenfile(initialdir='.',
         defaultextension=".met",
         filetypes=[("Metamorphopsia JSON","*.met")])
@@ -59,6 +62,7 @@ def open_file():
     data = json.load(file)
     bump_r = data['bump_r']
     h_lines = data['h_lines']
+    v_lines = data['v_lines']
     date = data['date']
     draw_lines()
     file.close()    
@@ -80,10 +84,9 @@ def export_image():
 
 def draw_lines():
     canvas.delete('all')
-    for h_line in range(num_lines-1):
-        draw_h_line(h_line)
-    for v_line in range(num_lines-1):
-        draw_v_line(v_line)
+    for line_num in range(num_lines-1):
+        draw_h_line(line_num)
+        draw_v_line(line_num)
     draw_dot()
 
 def draw_dot():
@@ -101,28 +104,53 @@ def draw_h_line(line_num):
     distortion = ((mid_x + line['offset']), (y + line['value']))
     distortion_1 = ((mid_x + line['offset'] + bump_r), y)
     color = 'black'
-    if selected_line_num == line_num:
+    if selected_x_line_num == line_num:
         color = 'blue'
     canvas.create_line(left, distortion_0, distortion, distortion_1, right, fill=color, smooth="bezier")
 
 def draw_v_line(line_num):
-    canvas.create_line(line_num * dx, 0, line_num * dx, width-1)
+    x = line_num * dx
+    line = v_lines[line_num]
+    top = (x, 0)
+    bottom = (x, width-1)
+    distortion_0 = (x, (mid_x + line['offset'] - bump_r))
+    distortion = ((x + line['value']), (mid_x + line['offset']))
+    distortion_1 = (x, (mid_x + line['offset'] + bump_r))
+    color = 'black'
+    if selected_y_line_num == line_num:
+        color = 'blue'
+    canvas.create_line(top, distortion_0, distortion, distortion_1, bottom, fill=color, smooth="bezier")
+
+
+# def draw_v_line(line_num):
+#     canvas.create_line(line_num * dx, 0, line_num * dx, width-1)
 
 def click(event):
-    global selected_line_num
+    global selected_x_line_num, selected_y_line_num
     x, y = event.x, event.y
-    #print('{}, {}'.format(x, y))
-    selected_line_num = round(y / dx)
+    if axis.get() == 'x':
+        selected_x_line_num = round(y / dx)
+    else:  
+        selected_y_line_num = round(x / dx)
 
 def motion(event):
-    if not selected_line_num:
-        return
-    selected_line = h_lines[selected_line_num]
     x, y = event.x, event.y
-    x_offset_pixels = x - mid_x
-    y_offset_pixels = y - (selected_line_num * dx)
-    selected_line['offset'] = x_offset_pixels
-    selected_line['value'] = y_offset_pixels
+    if axis.get() == 'x':
+        if not selected_x_line_num:
+            return
+        selected_line = h_lines[selected_x_line_num]
+        x_offset_pixels = x - mid_x
+        y_offset_pixels = y - (selected_x_line_num * dx)
+        selected_line['offset'] = x_offset_pixels
+        selected_line['value'] = y_offset_pixels
+    else:
+        if not selected_y_line_num:
+            return
+        selected_line = v_lines[selected_y_line_num]
+        x_offset_pixels = x - (selected_y_line_num * dx)
+        y_offset_pixels = y - mid_x
+        selected_line['offset'] = y_offset_pixels
+        selected_line['value'] = x_offset_pixels
     draw_lines()
 
 canvas.bind('<B1-Motion>', motion)
@@ -132,6 +160,16 @@ def changed_bump(w):
     global bump_r
     bump_r = int(w)
     draw_lines()
+
+axis = StringVar(window, 'x')
+
+axis_frame = Frame(button_frame)
+x_button = Radiobutton(axis_frame, text="Horizontal Lines", variable=axis, value='x')
+x_button.pack(fill='both')
+y_button = Radiobutton(axis_frame, text="Vertical Lines", variable=axis, value='y')
+y_button.pack(fill='both')
+
+axis_frame.pack(side='left')
 
 width_label = Label(button_frame, text="Bump Width")
 width_label.pack(side='left')
