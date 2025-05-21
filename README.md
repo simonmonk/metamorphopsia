@@ -63,3 +63,6 @@ I don't know how useful this tool will be for someone with a *diagonal* distorti
 
 I'd love to enter into a discussion on this with an optometrist, and welcome pull requests for improvements. If you have found the tool useful, please send me a message via github.
 
+# See Also
+
+https://air.unimi.it/bitstream/2434/881140/1/Metamorfopsie.pdf
