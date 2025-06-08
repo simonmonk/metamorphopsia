@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metamorphopsia Measurement Tool</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Add this style for side-by-side layout */
+        #main-flex {
+            display: flex;
+            align-items: flex-start;
+            gap: 32px;
+        }
+        #app {
+            flex: 0 0 auto;
+        }
+        #instructions {
+            max-width: 500px;
+            flex: 1 1 0;
+        }
+        @media (max-width: 900px) {
+            #main-flex {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="main-flex">
+        <div id="app">
+            <h1>Metamorphopsia Measurement Tool</h1>
+            <h2>by Simon Monk (srmonk@gmail.com)</h2>
+            <canvas id="canvas"></canvas>
+            <div id="controls">
+                <label for="bumpWidth">Bump Width:</label>
+                <input type="range" id="bumpWidth" min="30" max="150" value="60">
+                <button id="resetButton">Reset</button>
+                <button id="saveButton">Save as...</button>
+                <button id="openButton">Open...</button>
+                <button id="exportButton">Export Image...</button>
+            </div>
+            <div id="axisSelection">
+                <label>Line Orientation:</label>
+                <input type="radio" name="axis" value="x" checked> Horizontal
+                <input type="radio" name="axis" value="y"> Vertical
+            </div>
+        </div>
+        <div id="instructions">
+            <h2>Instructions</h2>
+            <p>The process with my software tool is, while looking at the grid with the eye you want to assess (let's call this the <em>bad eye</em>), adjust the lines until they appear straight, with the bad eye. In doing this, you will have distorted the grid, to compensate for the distortion in the bad eye. When you look at the grid with your good eye, you will see the distorted grid, that you can save it as a record.</p>
+            <p>Procedure.</p>
+            <ul>
+                <li>Decide which lines to adjust first (horizontal or vertical) and click the relevant radio button for <em>Horizontal Lines</em> or <em>Vertical Lines</em>. If like me, the vertical lines are straight, then you will only need to adjust the horizontal lines.</li>
+                <li>Closing your good eye, look at the dot in the centre of the grid (the grid lines look bumpy). Try and keep a consistent distance to the screen.</li>
+                <li>Use your mouse (or get someone else to do this) to drag the middle line on which the red dot is placed so that it is as straight as possible.</li>
+                <li>You may find that while the middle of the distortion is corrected, the corrective bump is not wide enough. If so, adjust the <em>Bump Width</em> slider, until the middle line is as straight as possible. All the time, try and focus on the dot.</li>
+                <li>Now adjust the lines above and below the middle line, to make them flat, always coming back to focus on the dot.</li>
+                <li>If you need to adjust the lines on the other axis, click the radio button and repeat the line straightening for the other axis.</li>
+            </ul>
+            <p>That's it. You can also save the chart, using the <b>Save As..</b> button. By default, the file is named as a timestamp, so you can keep a historical record. Saving, saves the chart as data, so, you can if you want re-open it and edit an old chart, before saving it again.</p>
+            <p>The <b>Export...</b> menu option allows you to save the plot as a PNG image.</p>
+            <h2>Caveat</h2>
+            <p>I have zero optometry training. I can barely spell it. So please, please, please <b>DO NOT RELY ON THIS TOOL</b>. Go and see a professional.</p>
+            <p>I am very aware that this works for me, as my distortions are only along horizontal lines. And essentially I have a single distortion 'bump', that extends to several lines above and below the dot. And, imaging the distortion may be on different axes for different people.</p>
+            <p>I don't know how useful this tool will be for someone with a <b>diagonal</b> distortion.</p>
+            <p>I'd love to enter into a discussion on this with an optometrist, and welcome pull requests for improvements. If you have found the tool useful, please send me a message via github.</p>
+            <h2>Background</h2>
+            <p>An open tool for assessing Metamorphopsia caused by an epiretinal membrane (ERM).</p>
+            <p>I have an ERM in my right eye, and at the end of a recent examination, I was given an Amsler chart to take home, to use for self assessment of the amount of distortion. With the the words <i>if it gets worse, come back and see us. If not, see you in a year</i>.</p>
+            <p>The Amsler Recording Chart, is just an A5 sheet of paper with a 5mm pitch grid printed on it and a dot in the middle. When you look at it with one eye (staring at the dot) you see distortion in the grid. For me, the horizontal lines bend near the middle.</p>
+            <p>On the way home from the opticians, I started thinking about how this self-assessment could be done in a more quantitative manner.</p>
+            <p>The result of this is a prototype software tool that I can use to record my metamorphopsia.</p>
+            <h2>See Also</h2>
+            <a href="https://air.unimi.it/bitstream/2434/881140/1/Metamorfopsie.pdf" target="_blank">https://air.unimi.it/bitstream/2434/881140/1/Metamorfopsie.pdf</a>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
