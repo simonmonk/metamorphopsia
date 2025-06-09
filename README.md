@@ -1,4 +1,4 @@
-# metamorphopsia.py
+# metamorphopsia
 
 An open tool for assessing Metamorphopsia caused by an epiretinal membrane (ERM)
 
