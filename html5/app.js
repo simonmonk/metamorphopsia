@@ -5,7 +5,7 @@ const dx = 30; // pixels
 const width = (numLines - 1) * dx; // pixels
 const midX = Math.floor(numLines / 2) * dx;
 const dotR = dx / 10; // pixels
-let bumpR = 2 * dx;
+let bumpR = 4 * dx;
 let date = new Date().toISOString().split('T')[0];
 let titleBase = "Metamorphopsia Measurement Tool";
 
